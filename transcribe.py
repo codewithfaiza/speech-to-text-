@@ -5,10 +5,10 @@ def transcribe_audio(file_path):
     recognizer = sr.Recognizer()
     try:
         with sr.AudioFile(file_path) as source:
-            print("Listening to audio...")
-            audio = recognizer.record(source)
+            print("Audio in process...")
+            sound = recognizer.record(source)
             print("Transcribing...")
-            text = recognizer.recognize_google(audio)
+            text = recognizer.recognize_google(sound)
             print("Transcription:")
             print(text)
     except sr.UnknownValueError:
