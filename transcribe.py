@@ -1,21 +1,31 @@
 
 import speech_recognition as sr
 
-def transcribe_audio(file_path):
+def transcribe_from_mic():
     recognizer = sr.Recognizer()
-    try:
-        with sr.AudioFile(file_path) as source:
-            print("Audio in process...")
-            sound = recognizer.record(source)
-            print("Transcribing...")
-            text = recognizer.recognize_google(sound)
-            print("Transcription:")
-            print(text)
-    except sr.UnknownValueError:
-        print("Google Speech Recognition could not understand the audio.")
-    except sr.RequestError as e:
-        print(f"Could not request results from Google Speech Recognition service; {e}")
+    mic = sr.Microphone()
 
-if __name__ == "__main__":
-    file_path = input("Enter path to your WAV audio file: ")
-    transcribe_audio(file_path)
+    try:
+        with mic as source:
+            print("Adjusting for background noise...")
+            recognizer.adjust_for_ambient_noise(source)
+            print("Listening... Speak clearly into the microphone.")
+            
+            audio_data = recognizer.listen(source, timeout=15)
+            print("Processing...")
+
+            # Transcribe speech using Google's API
+            text = recognizer.recognize_google(audio_data)
+            print("\nTranscribed Text:")
+            print(text)
+            return text
+
+    except sr.WaitTimeoutError:
+        print("Listening timed out while waiting for phrase to start.")
+    except sr.UnknownValueError:
+        print("Sorry, couldn't understand the audio.")
+    except sr.RequestError as e:
+        print("API request error:", str(e))
+
+# Run the function
+transcribe_from_mic()
